@@ -4,8 +4,23 @@ import (
 	"time"
 )
 
+type yanicTime struct {
+    time.Time
+}
+
+func (self *yanicTime) UnmarshalJSON(b []byte) (err error) {
+    s := string(b)
+    s = s[1:len(s)-1]
+    t, err := time.Parse(time.RFC3339Nano, s)
+    if err != nil {
+        t, err = time.Parse("2006-01-02T15:04:05.999999999Z0700", s)
+    }
+    self.Time = t
+    return
+}
+
 type Nodes struct {
-	Timestamp time.Time        `json:"timestamp"`
+	Timestamp yanicTime        `json:"timestamp"`
 	Version   int              `json:"version"`
 	Nodes     map[string]*Node `json:"nodes"`
 }
